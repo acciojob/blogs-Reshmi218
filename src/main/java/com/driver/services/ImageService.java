@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ImageService {
@@ -17,15 +16,14 @@ public class ImageService {
     ImageRepository imageRepository2;
 
     public Image addImage(Integer blogId, String description, String dimensions){
-        Blog blog=blogRepository2.findById(blogId).get();
         //add an image to the blog
-        Image image=new Image();
+        Blog blog = blogRepository2.findById(blogId).get();
+        Image image = new Image();
+        image.setBlog(blog);
         image.setDescription(description);
         image.setDimensions(dimensions);
         image.setBlog(blog);
-
         blog.getImageList().add(image);
-
         blogRepository2.save(blog);
         return image;
     }
@@ -36,15 +34,21 @@ public class ImageService {
 
     public int countImagesInScreen(Integer id, String screenDimensions) {
         //Find the number of images of given dimensions that can fit in a screen having `screenDimensions`
-        Image image=imageRepository2.findById(id).get();
-        String[] imageDim=image.getDimensions().split("X");
-        int imageWidth=Integer.parseInt(imageDim[0]);
-        int imageLength=Integer.parseInt(imageDim[1]);
+        Image image = imageRepository2.findById(id).get();
+        String imageDimensions = image.getDimensions();
+        int indexOfX = imageDimensions.indexOf("X");
+        int a = Integer.parseInt(imageDimensions.substring(0,indexOfX));
+        int b = Integer.parseInt(imageDimensions.substring(indexOfX+1));
 
-        String[] screenDim=screenDimensions.split("X");
-        int screenWidth=Integer.parseInt(screenDim[0]);
-        int screenLength=Integer.parseInt(screenDim[1]);
-        return (screenWidth/imageWidth)*(screenLength/imageLength);
+        int indexOfXScreen = screenDimensions.indexOf("X");
+        int x = Integer.parseInt(screenDimensions.substring(0,indexOfXScreen));
+        int y = Integer.parseInt(screenDimensions.substring(indexOfXScreen+1));
+
+        int heightRatio = x/a;
+        int widthRation = y/b;
+
+        int count = heightRatio*widthRation;
+
+        return count;
     }
 }
-

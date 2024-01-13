@@ -1,12 +1,14 @@
 package com.driver.models;
 
-import org.hibernate.annotations.GeneratorType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -15,7 +17,8 @@ public class User {
     private String firstName;
     private String lastName;
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
-    private List<Blog> blogList=new ArrayList<>();
+    @JsonIgnore
+    private List<Blog> blogList = new ArrayList<>();
 
     public User() {
     }

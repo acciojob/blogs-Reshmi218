@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -15,12 +14,11 @@ public class UserService {
     UserRepository userRepository3;
 
     public User createUser(String username, String password){
-        User user =new User();
+        User user = new User();
         user.setUsername(username);
         user.setPassword(password);
         user.setFirstName("test");
         user.setLastName("test");
-
         userRepository3.save(user);
         return user;
     }
@@ -30,13 +28,9 @@ public class UserService {
     }
 
     public User updateUser(Integer id, String password){
-        Optional<User> userOptional=userRepository3.findById(id);
-        User user=null;
-        if(userOptional.isPresent()){
-            user = userOptional.get();
-            user.setPassword(password);
-            userRepository3.save(user);
-        }
+        User user = userRepository3.findById(id).get();
+        user.setPassword(password);
+        userRepository3.save(user);
         return user;
     }
 }
