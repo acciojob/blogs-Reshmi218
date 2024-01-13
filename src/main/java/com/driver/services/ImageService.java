@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ImageService {
@@ -16,18 +17,17 @@ public class ImageService {
     ImageRepository imageRepository2;
 
     public Image addImage(Integer blogId, String description, String dimensions){
+        Blog blog=blogRepository2.findById(blogId).get();
         //add an image to the blog
-        Blog blog = blogRepository2.findById(blogId).get();
-        Image image = new Image();
+        Image image=new Image();
         image.setDescription(description);
         image.setDimensions(dimensions);
         image.setBlog(blog);
 
-        List<Image> imageList = blog.getImageList();
-        imageList.add(image);
+        blog.getImageList().add(image);
+
         blogRepository2.save(blog);
         return image;
-
     }
 
     public void deleteImage(Integer id){
@@ -36,20 +36,15 @@ public class ImageService {
 
     public int countImagesInScreen(Integer id, String screenDimensions) {
         //Find the number of images of given dimensions that can fit in a screen having `screenDimensions`
-        int count = 0;
-        String[] dimArray = screenDimensions.split("X");
-        Image image = imageRepository2.findById(id).get();
-        String dimensionOfImage = image.getDimensions();
-        String[] imgArray = dimensionOfImage.split("X");
-        int imgX = Integer.parseInt(imgArray[0]);
-        int imgY = Integer.parseInt(imgArray[1]);
+        Image image=imageRepository2.findById(id).get();
+        String[] imageDim=image.getDimensions().split("X");
+        int imageWidth=Integer.parseInt(imageDim[0]);
+        int imageLength=Integer.parseInt(imageDim[1]);
 
-        int dimX = Integer.parseInt(dimArray[0]);
-        int dimY = Integer.parseInt(dimArray[1]);
-        //4x4 = 4/2 * 4/2 = 4 images
-        int cntX = dimX/imgX;
-        int cntY = dimY/imgY;
-        count = cntY*cntX;
-        return count;
+        String[] screenDim=screenDimensions.split("X");
+        int screenWidth=Integer.parseInt(screenDim[0]);
+        int screenLength=Integer.parseInt(screenDim[1]);
+        return (screenWidth/imageWidth)*(screenLength/imageLength);
     }
 }
+
